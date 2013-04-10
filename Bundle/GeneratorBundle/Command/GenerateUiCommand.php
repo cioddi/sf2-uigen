@@ -11,9 +11,9 @@
 
 namespace Uigen\Bundle\GeneratorBundle\Command;
 
-use Symfony\Bundle\DoctrineBundle\Command\DoctrineCommand;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 
-abstract class GenerateUiCommand extends DoctrineCommand
+abstract class GenerateUiCommand extends ContainerAwareCommand
 {
 	/**
 	 * 
