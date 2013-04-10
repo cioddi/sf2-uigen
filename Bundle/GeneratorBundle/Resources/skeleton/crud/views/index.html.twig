@@ -1,0 +1,28 @@
+{{'{% extends "'}}{{ bundle }}{{'::layout.html.twig" %}'}}
+
+{{'{% block stylesheets %}'}}
+
+<link rel="stylesheet" type="text/css" href="/bundles/uigengenerator/extjs/resources/css/ext-all.css" />
+
+<link rel="stylesheet" type="text/css" href="/bundles/uigengenerator/extjs/ux/css/CheckHeader.css" />
+{{'{% endblock %}'}}
+
+{{'{% block javascripts %}'}}
+<script src="{{"{{ asset('/bundles/uigengenerator/extjs/ext-all.js') }}"}}" type="text/javascript"></script>
+
+<script src="{{ public_dir }}/js/{{ entity }}_grid.js" type="text/javascript"></script>
+{{'{% endblock %}'}}
+
+
+{{'{% block body %}'}}
+	<script type="text/javascript" charset="utf-8">
+	Ext.onReady(function(){
+	                                                                       
+		{{ entity }}_grids = new Array();                                  
+		{{ entity }}_grids.push(new {{ entity }}Grid('{{ entity }}-grid'));
+	});
+	</script>
+	
+	<div id="{{ entity }}-grid"></div>
+	
+{{'{% endblock %}'}}
