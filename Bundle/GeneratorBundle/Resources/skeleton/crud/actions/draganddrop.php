@@ -14,7 +14,7 @@
 	    $target_id = $this->getRequest()->request->get('target_id');
 	    $position = $this->getRequest()->request->get('position');
 
-		$em = $this->getDoctrine()->getEntityManager();
+		$em = $this->getDoctrine()->getManager();
 		
 		$drag_entity = $em->getRepository('{{ bundle }}:{{ entity_class }}')->find($drag_id);
 		

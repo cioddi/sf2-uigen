@@ -12,7 +12,7 @@
 		
 	    $start = $this->getRequest()->query->get('start');
 	
-	    $em = $this->getDoctrine()->getEntityManager();
+	    $em = $this->getDoctrine()->getManager();
 		
 		{% if ('draganddrop' in actions) %}
 		

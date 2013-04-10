@@ -14,7 +14,7 @@
 
 		$entities = json_decode($data);
 
-		$em = $this->getDoctrine()->getEntityManager();
+		$em = $this->getDoctrine()->getManager();
 	
 		foreach($entities as $data_entity){
 		 

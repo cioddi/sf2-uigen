@@ -10,7 +10,7 @@
 	public function createAction()
 	{
 
-	    $em = $this->getDoctrine()->getEntityManager();
+	    $em = $this->getDoctrine()->getManager();
 	
 	    $entity  = new {{ entity_class }}();
 	
