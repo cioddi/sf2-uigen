@@ -4,7 +4,7 @@ namespace Uigen\Bundle\GeneratorBundle\Entity;
 
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Bundle\DoctrineBundle\Mapping\MetadataFactory;
+use Doctrine\Bundle\DoctrineBundle\Mapping\MetadataFactory;
 use Sensio\Bundle\GeneratorBundle\Command as sensioCommand;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Bundle\DoctrineBundle\Registry;
