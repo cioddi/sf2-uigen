@@ -20,14 +20,14 @@ videos:
 
 usage:
 
-1.) 	php symfony doctrine:generate:entity
-2.) 	add 'use Uigen\Bundle\GeneratorBundle\Entity\Entityobject;'
-	to entity class and extend class definition by Entityobject
+1. 	```php symfony doctrine:generate:entity```
+2. 	add ```use Uigen\Bundle\GeneratorBundle\Entity\Entityobject;```
+	to entity class and extend class definition by ```Entityobject```
 	( Doctrine < 2.2 and PHP < 5.4)
-3.) 	php symfony doctrine:schema:update --force
-4.) 	php symfony uigen:generate:grid
-5.) 	php symfony assets:install web/
-6.) 	php symfony cache:clear --env=prod
+3. 	```php symfony doctrine:schema:update --force```
+4. 	```php symfony uigen:generate:grid```
+5. 	```php symfony assets:install web/```
+6. 	```php symfony cache:clear --env=prod```
 
 known bugs:
 always sorts for positioning column even if it was not specified. So if you don't use drag'n'drop positioning remove 'pos' => 'ASC' from findby call leaving the empty array,
