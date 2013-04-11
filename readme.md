@@ -1,9 +1,9 @@
 #uigen - symfony2 extjs4 generator
-author: Max Tobias Weber
+author: Max Tobias Weber (maxtobiasweber@gmail.com)
 
 This code is currently not maintained.
 
-##install:
+##install (if you have trouble setting this up contact me and I will make a short howto video):
 
 - cd src/
 - git clone https://github.com/cioddi/sf2-uigen.git
