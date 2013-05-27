@@ -35,6 +35,7 @@
 			$return_array[] = $entity->toArray();
 		}
 		if(!isset($return_array))$return_array = array();
+		$returnObject = new \stdClass;
 		
 		$returnObject->items = $return_array;
 				
