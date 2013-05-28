@@ -9,8 +9,16 @@
 	 */
 	public function createAction()
 	{
+		$filterArray = array();
+		{% for field, metadata in fields %}
+		{%- if metadata.constraint == true %}
+	    $filterArray['{{field}}'] = $this->getRequest()->query->get('{{field}}');
 
-	    $em = $this->getDoctrine()->getManager();
+		{%- endif %}
+		{% endfor %}
+		$form = $this->getRequest()->request->get('form');
+		
+	    $em = $this->getDoctrine()->getEntityManager();
 	
 	    $entity  = new {{ entity_class }}();
 	
@@ -19,36 +27,40 @@
 {% if field == dnd_column and 'draganddrop' in actions %}
 
 		$highest_entity = $em->getRepository('{{ bundle }}:{{ entity_class }}')->findBy(
-		array(),    
+		$filterArray,    
 		array('{{ dnd_column }}' => 'DESC'),
 		1);
 		if(isset($highest_entity[0])){
 	
-			$next_pos = $highest_entity[0]->get{{ dnd_column|capitalize }}()+1;
+			$next_pos = $highest_entity[0]->get{{ metadata.camelized|capitalize }}()+1;
 			
 		}else{
 			$next_pos = 1;
 		}
 		
-		$entity->set{{ field|capitalize }}($next_pos);
+		$entity->set{{ metadata.camelized|capitalize }}($next_pos);
 {% else %}
-{% if metadata.type == 'integer' %}
-		$entity->set{{ field|capitalize }}(0);
+
+{% if metadata.constraint == true %}
+		$entity->set{{ metadata.camelized|capitalize }}($filterArray['{{field}}']);
+{% elseif metadata.type == 'integer' %}
+		$entity->set{{ metadata.camelized|capitalize }}(0);
 {% elseif metadata.type == 'float' %}
-		$entity->set{{ field|capitalize }}(0.0);
+		$entity->set{{ metadata.camelized|capitalize }}(0.0);
 {% elseif metadata.type == 'boolean' %}
-		$entity->set{{ field|capitalize }}(false);
+		$entity->set{{ metadata.camelized|capitalize }}(false);
 {% elseif metadata.type == 'date' %}
-		$entity->set{{ field|capitalize }}(new \DateTime('now'));
+		$entity->set{{ metadata.camelized|capitalize }}(new \DateTime('now'));
 {% elseif metadata.type == 'datetime' %}
-		$entity->set{{ field|capitalize }}(new \DateTime('now'));
+		$entity->set{{ metadata.camelized|capitalize }}(new \DateTime('now'));
 {% else %}
-		$entity->set{{ field|capitalize }}('');
+		$entity->set{{ metadata.camelized|capitalize }}('');
 {% endif %}
 {% endif %}
 {% endif %}
 {% endfor  %}
 
+		if($form)$entity->fromArray(json_decode($form));
 	    $em->persist($entity);
 	    $em->flush();
 

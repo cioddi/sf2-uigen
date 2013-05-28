@@ -51,6 +51,8 @@ class DialogHelper extends BaseDialogHelper
 
     public function writeSection(OutputInterface $output, $text, $style = 'bg=blue;fg=white')
     {
+
+		print_r(parent);
         $output->writeln(array(
             '',
             $this->getHelperSet()->get('formatter')->formatBlock($text, $style, true),

@@ -27,7 +27,7 @@ use Uigen\Bundle\GeneratorBundle\Entity\Uigenentity;
  *
  * @author Max Tobias Weber <tobias@plan-r.de,maxtobiasweber@gmail.com>
  */
-class GenerateUiGridCommand extends GenerateUiCommand
+class GenerateUiTableCommand extends GenerateUiCommand
 {
     private $generator;
     private $formGenerator;
@@ -37,15 +37,7 @@ class GenerateUiGridCommand extends GenerateUiCommand
      */
     protected function configure()
     {
-        $this->setDefinition(array())
-            ->setDescription('Generates a CRUD based on a Doctrine entity')
-            ->setHelp(<<<EOT
-The <info>uigen:generate:grid</info> command generates a CRUD based on a Doctrine entity.
-
-<info>php app/console uigen:generate:grid</info>
-EOT
-            )
-            ->setName('uigen:generate:grid');
+        $this->setName('uigen:generate:table');
     }
 
     /**
@@ -59,16 +51,10 @@ EOT
 		if(!$this->uigenEntity->confirmGeneration())return 1;
 
 		
-		/**
-		 * 'actions' render param
-		 */
-        $this->actions = array('index', 'create', 'read', 'update', 'destroy');
 
 		if($this->uigenEntity->getOption('dnd')){
 			$this->actions[] = 'draganddrop';
 		}
-		
-		$this->uigenEntity->addRenderParams(array('actions' => $this->actions));
 		
 		/**
 		 * render files
@@ -85,16 +71,6 @@ EOT
         $this->uigenEntity->renderFile('views/index.html.twig', $this->uigenEntity->getViewsPath().'/index.html.twig');
 
 		/**
-		 * javascript extjs grid definition
-		 */
-        $this->uigenEntity->renderFile( 'js/grid.js', $this->uigenEntity->getPublicPath().'js/'.$this->uigenEntity->getEntityClassName().'_grid.js');
-		
-		/**
-		 *  TODO test class
-		 */
-        // $this->uigenEntity->renderFile('tests/test.php', $this->uigenEntity->getTestPath().'/'.$this->uigenEntity->getEntityClassName().'ControllerTest.php');
-
-		/**
 		 * Layout template
 		 */
 	    $this->uigenEntity->renderFile('views/layout.html.twig', $this->uigenEntity->getBundlePath().'/Resources/views/layout.html.twig');
@@ -108,7 +84,7 @@ EOT
 		/**
 		 * create Uigenentity generator object
 		 */
-		$this->uigenEntity = new Uigenentity($this->getContainer(),$output,__DIR__.'/../Resources/skeleton/crud');
+		$this->uigenEntity = new Uigenentity($this->getContainer(),$output,__DIR__.'/../Resources/skeleton/table');
 		
 		/**
 		 * Display a short introduction about UIGEN
@@ -124,11 +100,6 @@ EOT
 		 * configure drag and drop column
 		 */
 		$this->uigenEntity->configureDragAndDrop();
-		
-		/**
-		 * configure constraints
-		 */
-		$this->uigenEntity->configureConstraints();
 		
 		/**
 		 * configure route prefix (stored in option 'prefix')

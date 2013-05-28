@@ -6,6 +6,8 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\DependencyInjection\Definition;
+
 
 /**
  * This is the class that loads and manages your bundle configuration
@@ -19,6 +21,11 @@ class UigenGeneratorExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container)
     {
+	
+        $definition = new Definition('Uigen\Bundle\GeneratorBundle\Twig\UigenTwigExtension');
+        $definition->addTag('twig.extension');
+        $container->setDefinition('UigenTwigExtension', $definition);
+
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 

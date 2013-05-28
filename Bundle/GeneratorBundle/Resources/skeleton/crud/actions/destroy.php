@@ -9,30 +9,32 @@
 	 */
 	public function destroyAction($id)
 	{
-	    $em = $this->getDoctrine()->getManager();
+		$filterArray = array();
+		
+	    $em = $this->getDoctrine()->getEntityManager();
 	    $entity = $em->getRepository('{{ bundle }}:{{ entity }}')->find($id);
 
 	    if (!$entity) {
 	        return new Response(0);
 	    }
 		
+		{% for field, metadata in fields %}
+		{%- if metadata.constraint == true %}
+	    $filterArray['{{field}}'] = $entity->get{{ metadata.camelized|capitalize }}();
+
+		{%- endif %}
+		{% endfor %}
+		
 		{% if 'draganddrop' in actions %}
 		$del_pos = $entity->get{{ dnd_column|capitalize }}();
 		{% endif %}
 
 	    $em->remove($entity);
-	
-		{% if 'draganddrop' in actions %}
-		$q = $em->createQuery('select tb from {{ bundle }}:{{ entity_class }} tb where tb.{{ dnd_column }} > '.$del_pos);
-		$move_entities = $q->getResult();
-
 		
-		foreach($move_entities as $move_entity){
-			$move_entity->set{{ dnd_column|capitalize }}(($move_entity->get{{ dnd_column|capitalize }}()-1));
-			$em->persist($move_entity);
-		}
-		{% endif %}
 		$em->flush();
+		{% if 'draganddrop' in actions %}
+		$this->fixpos($filterArray,$em);
+		{% endif %}
 	
 	    return new Response(1);
 	}

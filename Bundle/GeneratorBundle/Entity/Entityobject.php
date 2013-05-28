@@ -2,6 +2,9 @@
 
 namespace Uigen\Bundle\GeneratorBundle\Entity;
 
+
+use Doctrine\Common\Util\Inflector;
+
 /**
  * Uigen\Bundle\GeneratorBundle\Entity\Entityobject
  *
@@ -14,14 +17,14 @@ class Entityobject
 		$details = array(); 
 		foreach($reflection->getProperties() as $property) { 
 			if(!$property->isStatic()) { 
-				switch(gettype($this->{'get'.ucfirst($property->getName())}())){
+				switch(gettype($this->{'get'.ucfirst(Inflector::camelize($property->getName()))}())){
 					case 'string':
 					case 'integer':
 					default:
-						$details[$property->getName()] = $this->{'get'.ucfirst($property->getName())}();
+						$details[$property->getName()] = $this->{'get'.ucfirst(Inflector::camelize($property->getName()))}();
 						break;
 					case 'object':
-						$details[$property->getName()] = $this->{'get'.ucfirst($property->getName())}()->format('Y-m-d H:i:s');
+						$details[$property->getName()] = $this->{'get'.ucfirst(Inflector::camelize($property->getName()))}()->format('Y-m-d H:i:s');
 						break;
 				}
 			} 
@@ -44,10 +47,10 @@ class Entityobject
 				switch($prop_ann[0]->type){
 					case 'datetime':
 					case 'date':
-						$this->{'set'.ucfirst($property->getName())}(new \DateTime($data_array->{$property->getName()}));
+						$this->{'set'.ucfirst(Inflector::camelize($property->getName()))}(new \DateTime($data_array->{$property->getName()}));
 						break;
 					default:
-						$this->{'set'.ucfirst($property->getName())}($data_array->{$property->getName()});
+						$this->{'set'.ucfirst(Inflector::camelize($property->getName()))}($data_array->{$property->getName()});
 						break;
 				}
 				

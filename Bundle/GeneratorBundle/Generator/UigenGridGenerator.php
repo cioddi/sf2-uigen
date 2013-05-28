@@ -67,147 +67,26 @@ class UigenGridGenerator extends sensioGenerator\Generator
 
 		if($uigenEntity->getOption('dnd')){
 			$this->actions[] = 'draganddrop';
-			$this->dnd_column = $uigenEntity->getOption('dnd_column');
 		}
-
-		$this->format	= 'annotation';
-        $this->entity   = $this->uigenEntity->getEntity();
-        $this->bundle   = $this->uigenEntity->getBundleObject();
-        $this->metadata = $this->uigenEntity->getMetadata();
-		$this->metadata = $this->metadata[0];
 		
-        $this->generateControllerClass();
+		
+		
+		$uigenEntity->addRenderParams(array('actions' => $this->actions));
+		
+        $this->uigenEntity->renderFile('controller.php', $this->uigenEntity->getControllerPath().'/'.$this->uigenEntity->getEntityClassName().'Controller.php');
 
-        $dir = sprintf('%s/Resources/views/%s', $this->bundle->getPath(), str_replace('\\', '/', $this->entity));
+        $dir = $this->uigenEntity->getPublicPath().str_replace('\\', '/', $this->entity);
 
         if (!file_exists($dir)) {
             $this->filesystem->mkdir($dir, 0777);
         }
 
-        $this->generateIndexView($dir);
+        $this->uigenEntity->renderFile('views/index.html.twig', $this->uigenEntity->getViewsPath().'/index.html');
 
-        $this->generateGridJs();
-		$this->generateLayoutView();
-        $this->generateTestClass();
+        $this->uigenEntity->renderFile( 'js/grid.js', $this->uigenEntity->getPublicPath().'js/grid.js');
+		$this->uigenEntity->renderFile('views/layout.html.twig', $this->uigenEntity->getViewsPath().'layout.html.twig');
+        $this->uigenEntity->renderFile('tests/test.php', $this->uigenEntity->getTestPath().'/'.$this->uigenEntity->getEntityClassName().'ControllerTest.php');
     }
 
 
-    /**
-     * Generates the controller class only.
-     *
-     */
-    private function generateControllerClass()
-    {
-        $dir = $this->bundle->getPath();
-
-        $parts = explode('\\', $this->entity);
-        $entityClass = array_pop($parts);
-        $entityNamespace = implode('\\', $parts);
-
-        $target = sprintf(
-            '%s/Controller/%s/%sController.php',
-            $dir,
-            str_replace('\\', '/', $entityNamespace),
-            $entityClass
-        );
-
-        if (file_exists($target)) {
-            throw new \RuntimeException('Unable to generate the controller as it already exists. at '.$target);
-        }
-
-        $this->renderFile($this->skeletonDir, 'controller.php', $target, array(
-            'actions'           => $this->actions,
-            'route_prefix'      => $this->routePrefix,
-            'route_name_prefix' => $this->routeNamePrefix,
-            'dir'               => $this->skeletonDir,
-            'bundle'            => $this->bundle->getName(),
-            'entity'            => $this->entity,
-            'entity_class'      => $entityClass,
-            'namespace'         => $this->bundle->getNamespace(),
-            'entity_namespace'  => $entityNamespace,
-            'format'            => $this->format,
-            'fields'            => $this->metadata->fieldMappings,
-			'dnd_column'		=> $this->uigenEntity->getOption('dnd_column')
-        ));
-    }
-
-    /**
-     * Generates the functional test class only.
-     *
-     */
-    private function generateTestClass()
-    {
-        $parts = explode('\\', $this->entity);
-        $entityClass = array_pop($parts);
-        $entityNamespace = implode('\\', $parts);
-
-        $dir    = $this->bundle->getPath() .'/Tests/Controller';
-        $target = $dir .'/'. str_replace('\\', '/', $entityNamespace).'/'. $entityClass .'ControllerTest.php';
-
-        $this->renderFile($this->skeletonDir, 'tests/test.php', $target, array(
-            'route_prefix'      => $this->routePrefix,
-            'route_name_prefix' => $this->routeNamePrefix,
-            'entity'            => $this->entity,
-            'entity_class'      => $entityClass,
-            'namespace'         => $this->bundle->getNamespace(),
-            'entity_namespace'  => $entityNamespace,
-            'actions'           => $this->actions,
-            'dir'               => $this->skeletonDir,
-        ));
-    }
-
-    /**
-     * Generates the index.html.twig template in the final bundle.
-     *
-     * @param string $dir The path to the folder that hosts templates in the bundle
-     */
-    private function generateIndexView($dir)
-    {
-		$public_dir = '/bundles/' . strtolower( str_replace('Bundle','',$this->bundle->getName()) );
-        $this->renderFile($this->skeletonDir, 'views/index.html.twig', $dir.'/index.html.twig', array(
-            'dir'               => $this->skeletonDir,
-            'entity'            => $this->entity,
-            'fields'            => $this->metadata->fieldMappings,
-            'actions'           => $this->actions,
-            'route_prefix'      => $this->routePrefix,
-            'route_name_prefix' => $this->routeNamePrefix,
-			'bundle_path'		=> $this->bundle->getPath(),
-            'bundle'            => $this->bundle->getName(),
-			'public_dir'		=> $public_dir
-        ));
-    }
-
-    /**
-     * Generates the layout.html.twig template in the final bundle.
-     *
-     */
-    private function generateLayoutView()
-    {
-		$dir    = $this->bundle->getPath() .'/Resources/views/';
-        $this->renderFile($this->skeletonDir, 'views/layout.html.twig', $dir.'/layout.html.twig', array());
-    }
-
-    /**
-     * Generates public/js/grid.js in the final bundle.
-     *
-     */
-    private function generateGridJS()
-    {
-	
-        $parts = explode('\\', $this->entity);
-        $entityClass = array_pop($parts);
-        $entityNamespace = implode('\\', $parts);
-
-        $dir    = $this->bundle->getPath() .'/Resources/public/js/';
-        $target = $dir .'/'. str_replace('\\', '/', $entityNamespace).'/'. $entityClass .'_grid.js';
-
-        $this->renderFile($this->skeletonDir, 'js/grid.js', $target, array(
-            'dir'               => $this->skeletonDir,
-            'entity'            => $this->entity,
-            'fields'            => $this->metadata->fieldMappings,
-            'actions'           => $this->actions,
-            'route_prefix'      => $this->routePrefix,
-            'route_name_prefix' => $this->routeNamePrefix,
-        ));
-    }
 }

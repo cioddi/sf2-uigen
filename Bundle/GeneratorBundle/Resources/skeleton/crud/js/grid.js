@@ -7,12 +7,20 @@ Ext.require([
     'Ext.ux.CheckColumn'
 ]);
 
+Ext.override(Ext.LoadMask, {
+	onHide: function(){
+		this.callParent();
+	}
+});
+
 function {{ entity }}Grid(target_el_id){
 
 	function create(){
 
 		Ext.Ajax.request({
+			method		: 	'GET',
 			url			: 	'/{{ route_prefix }}/create',
+			params		: 	store.proxy.extraParams,
 			success		: 	function(response){
 								store.load();
 							}									    
@@ -42,7 +50,7 @@ function {{ entity }}Grid(target_el_id){
 								switch(result){
 								case 1:
 									
-									store.load();
+									store.load({});
 									break;
 								}
 							}									    
@@ -52,7 +60,7 @@ function {{ entity }}Grid(target_el_id){
 	var delete_entity_id = 0;
 	function confirmDeletion(id){
 
-		Ext.Msg.confirm('delete?','Do you really want to delete this entry',function(btn){
+		Ext.Msg.confirm('delete?','Do you really want to delete this item',function(btn){
 		
 			if(btn == 'yes'){
 				
@@ -72,16 +80,24 @@ function {{ entity }}Grid(target_el_id){
 	}
 	
 	{%- if 'draganddrop' in actions %}
+	
 	function DragAndDrop(drag_id,target_id,position){
+		params = new Object();
+		params['drag_id'] = drag_id;
+		params['target_id'] = target_id;
+		params['position'] = position;
+		
+		{%- if dndAndConstraint %}
+		
+		for(var i in store.proxy.extraParams){
+			params[i] = store.proxy.extraParams[i];
+		}
+		{% endif %}
 		
 		Ext.Ajax.request({
 			method		:	'post',
 			url			: 	'/{{ route_prefix }}/draganddrop',
-			params		: 	{
-								drag_id: drag_id,
-								target_id: target_id,
-								position:position
-							}, 
+			params		: 	params, 
 			success		: 	function(response){
 								store.load();
 							}									    
@@ -89,6 +105,10 @@ function {{ entity }}Grid(target_el_id){
 	}
 	{% endif %}
 	
+	
+	{%- include 'js/combo.js' %}
+
+
     // create the Data Store
     var store = new Ext.data.Store({
         proxy	:	new Ext.data.HttpProxy({
@@ -96,10 +116,21 @@ function {{ entity }}Grid(target_el_id){
 					reader: {
 				                root: 'items',
 				                totalProperty: 'count'
-				            }
+				            },
+					getFilterValues:function(){
+						return { {% for field, metadata in fields %}{%- if metadata.constraint == true %}
+						{{field}}:{{metadata.camelized}}Combo.getValue(),
+
+						{%- endif %}
+						{% endfor %} };
+					},
+					extraParams:{ {% for field, metadata in fields %}{%- if metadata.constraint == true %}
+					{{field}}:0,
+
+					{%- endif %}
+					{% endfor %} }
 					}),
 		autoLoad:	true,
-		
 		fields	: 	[
 {% for field, metadata in fields %}
 						{
@@ -148,6 +179,18 @@ function {{ entity }}Grid(target_el_id){
 					xtype : 'datefield',
 					format: 'd.m.Y'
 	            		}
+{% elseif metadata.constraint == true %}	        
+				renderer: '{{metadata.constraintEntity|capitalize}}IdRenderer',
+				editor: {
+								xtype : 'combo',
+								typeAhead			:	false,
+								lazyRender			:	true,
+								store				:	{{metadata.camelized}}Combo.store,
+								displayField		:	'name',
+								valueField			:	'id',
+								mode				:	'local',
+							    lastQuery: ''
+						}
 {% elseif metadata.type == 'integer' %}	            editor: {
 					xtype : 'numberfield'
 	            		}
@@ -177,13 +220,32 @@ function {{ entity }}Grid(target_el_id){
 	           	 	text	: 	'create',
 		            handler : 	create,
 					icon	:	"/bundles/uigengenerator/images/add.png"
-				}
+				},	{
+			           	 	text	: 	'window',
+				            handler : 	function(){
+											var win = Ext.widget('window', {
+											                width: 400,
+											                height: 400,
+											                minHeight: 400,
+											                layout: 'fit',
+											                resizable: true,
+											                modal: true,
+											                items: new Ext.custom.{{ entity }}Form()
+											            });
+											win.show();
+										},
+							icon	:	"/bundles/uigengenerator/images/add.png"
+						}{% for field, metadata in fields %}{%- if metadata.constraint == true %}
+				,{{metadata.camelized}}Combo
+				
+				{%- endif %}
+				{% endfor %}
 			],
 		bbar: Ext.create('Ext.PagingToolbar', {
 		            store: store,
 		            displayInfo: true,
-		            displayMsg: 'Displaying topics {0} - {1} of {2}',
-		            emptyMsg: "No topics to display"
+		            displayMsg: 'Displaying items {0} - {1} of {2}',
+		            emptyMsg: "No items to display"
 		        }){%- if 'draganddrop' in actions %},
         viewConfig: {
             plugins: {
@@ -201,12 +263,67 @@ function {{ entity }}Grid(target_el_id){
 		{% endif %}
     });
 
-}
-
-
-function {{ entity }}Combo(target_el_id){
-
-	var combo = new Ext.form.ComboBox({
+	{%- if dndAndConstraint == true %}
+	var checkParameterSelection = function(){
 		
-	});
+		var allSelected = true;
+
+		for(var i in store.proxy.extraParams){
+			if(!store.proxy.extraParams[i])allSelected = false;
+		}
+
+		if(allSelected){
+			grid.getDockedComponent(2).items.items[1].enable();
+			grid.viewConfig.plugins.cmp.plugins[0].enable();
+		}else{ 
+			grid.getDockedComponent(2).items.items[1].disable();
+			grid.viewConfig.plugins.cmp.plugins[0].disable();
+		}
+	}
+	checkParameterSelection();
+{% endif %}
 }
+
+
+Ext.define('Ext.custom.{{ entity }}CustomComboBox',{
+	extend:'Ext.form.field.ComboBox',
+	alias:'widget.{{ entity }}CustomComboBox',
+	constructor:function(cnfg){
+	    this.callParent(arguments);
+	    this.initConfig(cnfg);
+	
+		var comboStore = this.store;
+		Ext.util.Format.{{ entity|capitalize }}IdRenderer = function(v)
+		{
+			var idx = comboStore.findExact('id',v);
+			var rec = comboStore.getAt(idx);
+			if(rec && v != '')return rec.get('name');
+			return '';
+		};
+	},
+
+		typeAhead			:	false,
+		lazyRender			:	true,
+		store				:	new Ext.data.Store({
+								    proxy		:	new Ext.data.HttpProxy({
+										url: '/{{ entity }}/list{{ entity }}_idcombo',
+									}),
+								    fields		: [ 
+													{
+													   	name	: 	'id', 
+													   	type	: 	'integer'
+												   	},{
+													   	name	: 	'name', 
+													   	type	: 	'string'
+												   	}
+											      ]
+
+								}),
+		displayField		:	'name',
+		valueField			:	'id',
+		mode				:	'local',
+		triggerAction		:	'all',
+		editable			: 	false,
+		width				:	80
+});
+{%- include 'js/form.js' %}

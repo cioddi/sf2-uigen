@@ -1,0 +1,37 @@
+{{'{% extends "'}}{{ bundle }}{{'::layout.html.twig" %}'}}
+
+{{'{% block stylesheets %}'}}
+
+{{'{% endblock %}'}}
+
+{{'{% block javascripts %}'}}
+<script src="{{"{{ asset('/bundles/uigengenerator/extjs/ext-all.js') }}"}}" type="text/javascript"></script>
+{% for field, metadata in fields %}
+{%- if metadata.constraint == true %}
+<script src="{{ public_dir }}/js/{{metadata.constraintEntity}}_grid.js" type="text/javascript"></script>
+
+{%- endif %}
+{% endfor %}
+<script src="{{ public_dir }}/js/{{ entity }}_table.js" type="text/javascript"></script>
+{{'{% endblock %}'}}
+
+
+{{'{% block body %}'}}
+	
+	<table border="0" cellspacing="5" cellpadding="5">
+		<thead>
+			<tr>
+	{% for field, metadata in fields %}
+		
+				<th>{{ field }}</th>
+		
+	{% endfor %}
+			</tr>
+		</thead>
+		
+		<tbody>
+			
+		</tbody>
+	</table>
+	
+{{'{% endblock %}'}}
