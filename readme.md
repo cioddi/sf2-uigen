@@ -1,7 +1,7 @@
 #uigen - symfony2 extjs4 generator
 author: Max Tobias Weber (maxtobiasweber@gmail.com)
 
-This code is currently not maintained.
+NOT READY FOR PRODUCTION USE
 
 ##install (if you have trouble setting this up contact me and I will make a short howto video):
 
@@ -24,13 +24,11 @@ This code is currently not maintained.
 2. 	add ```use Uigen\Bundle\GeneratorBundle\Entity\Entityobject;```
 	to entity class and extend class definition by ```Entityobject``
 	( Doctrine < 2.2 and PHP < 5.4)
-3. 	```php symfony doctrine:schema:update --force```
-4. 	```php symfony uigen:generate:grid```
-5. 	```php symfony assets:install web/```
-6. 	```php symfony cache:clear --env=prod```
+3. 	```php app/console doctrine:schema:update --force```
+4. 	```php app/console uigen:generate:grid```
+5. 	```php app/console assets:install web/```
+6. 	```php app/console cache:clear --env=prod```
 
-##known bugs:
-Always sorts for positioning column even if it was not specified. So if you don't use drag'n'drop positioning remove 'pos' => 'ASC' from findby call leaving the empty array,
 
 ##changelog:
 
