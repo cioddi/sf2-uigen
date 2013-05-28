@@ -468,11 +468,14 @@ class Uigenentity extends ContainerAwareCommand{
 		
 		// register constraints
 		$this->getCamelizedFieldMappings();
+
+
 		
 		foreach($this->fieldMappings as $i => $field){
-			if(strpos($i,'_id')){
+
+			if(strpos($field['columnName'],'_id')){
 				
-				$constraint_entityName = explode('_',$i);
+				$constraint_entityName = explode('_',$field['columnName']);
 				$constraint_entityName = $constraint_entityName[0];
 				
 		        $this->fieldMappings[$i]['constraint'] = $this->dialog->ask($this->output, $this->dialog->getQuestion('Do you want to configure a foreign key for '.$i, 'yes'), true);
