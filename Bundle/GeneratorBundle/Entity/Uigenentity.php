@@ -3,7 +3,8 @@
 namespace Uigen\Bundle\GeneratorBundle\Entity;
 
 
-use Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand;
+
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Doctrine\Bundle\DoctrineBundle\Mapping\MetadataFactory;
 use Sensio\Bundle\GeneratorBundle\Command as sensioCommand;
 use Doctrine\Common\Annotations\AnnotationReader;
@@ -19,7 +20,7 @@ use Uigen\Bundle\GeneratorBundle\Command\Helper\DialogHelper;
  * @author Max Tobias Weber <maxtobiasweber@gmail.com>
  */
 
-class Uigenentity extends DoctrineCommand{
+class Uigenentity extends ContainerAwareCommand{
 	
 	private $entity;
 	
