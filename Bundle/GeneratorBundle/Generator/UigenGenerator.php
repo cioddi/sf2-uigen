@@ -19,6 +19,7 @@ class UigenGenerator extends sensioGenerator\Generator
     public function renderTemplate($skeletonDir, $srcFile, $targetFile, $RenderParameterArray)
     {
 	
-		$this->renderFile($skeletonDir, $srcFile, $targetFile, $RenderParameterArray);
+		$this->setSkeletonDirs($skeletonDir);
+		$this->renderFile($srcFile, $targetFile, $RenderParameterArray);
     }
 }
