@@ -6,8 +6,7 @@ author: Max Tobias Weber (maxtobiasweber@gmail.com)
 ##install (if you have trouble setting this up contact me and I will make a short howto video):
 
 - cd src/
-- git clone https://github.com/cioddi/sf2-uigen.git
-- mv sf2-uigen Uigen
+- git clone https://github.com/cioddi/sf2-uigen.git Uigen
 - insert ```
             new Uigen\Bundle\GeneratorBundle\UigenGeneratorBundle(),``` into app/Resources/AppKernel.php
 
@@ -17,6 +16,7 @@ author: Max Tobias Weber (maxtobiasweber@gmail.com)
 - http://www.youtube.com/watch?v=yj-NuXEq2OE
 - http://www.youtube.com/watch?v=BGpS275i0bg
 - http://www.youtube.com/watch?v=cPvRE32ZT-s
+
 
 ##usage:
 
